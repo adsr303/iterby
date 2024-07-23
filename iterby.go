@@ -20,10 +20,28 @@ func Enumerate[T any](f func(func(T) bool)) func(func(int, T) bool) {
 	}
 }
 
-// Count generates an infinite sequence of ints.
+// Count generates an infinite sequence of consecutive integers,
+// starting from 0.
 func Count() func(func(int) bool) {
 	return func(yield func(int) bool) {
 		for i := 0; ; i++ {
+			if !yield(i) {
+				return
+			}
+		}
+	}
+}
+
+// Number is any integer or floating-point numeric type.
+type Number interface {
+	~int | ~uint | ~int8 | ~uint8 | ~int16 | ~uint16 | ~int32 | ~uint32 | ~int64 | ~uint64 | ~float32 | ~float64
+}
+
+// Count2 generates an infinite sequence of numbers, starting from start
+// and incrementing by step.
+func Count2[T Number](start, step T) func(func(T) bool) {
+	return func(yield func(T) bool) {
+		for i := start; ; i += step {
 			if !yield(i) {
 				return
 			}
@@ -55,7 +73,7 @@ func Cycle[T any](args ...[]T) func(func(T) bool) {
 	}
 }
 
-func RangeFilter[T any](begin func(T) bool, end func(T) bool, f func(func(T) bool)) func(func(T) bool) {
+func RangeFilter[T any](begin, end func(T) bool, f func(func(T) bool)) func(func(T) bool) {
 	return func(yield func(T) bool) {
 		var inRange bool
 		for t := range f {

@@ -23,3 +23,14 @@ func ExampleCount() {
 	// 4
 	// 5
 }
+
+func ExampleCount2() {
+	for x := range iterby.Count2(0, 3.14/8) {
+		if x > 7 {
+			break // Stop the test at some point :)
+		}
+		fmt.Printf("%.2f ", x)
+	}
+	// Output:
+	// 0.00 0.39 0.79 1.18 1.57 1.96 2.35 2.75 3.14 3.53 3.93 4.32 4.71 5.10 5.50 5.89 6.28 6.67
+}
