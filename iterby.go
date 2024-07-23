@@ -20,14 +20,13 @@ func Enumerate[T any](f func(func(T) bool)) func(func(int, T) bool) {
 	}
 }
 
+// Count generates an infinite sequence of ints.
 func Count() func(func(int) bool) {
 	return func(yield func(int) bool) {
-		var index int
-		for {
-			if !yield(index) {
+		for i := 0; ; i++ {
+			if !yield(i) {
 				return
 			}
-			index++
 		}
 	}
 }
