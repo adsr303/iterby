@@ -63,7 +63,7 @@ func Chain[T any](args ...[]T) func(func(T) bool) {
 	}
 }
 
-// Chain generates an infinitely repeating sequence of all elements of
+// Cycle generates an infinitely repeating sequence of all elements of
 // provided slices, allowing to for-range over them in a single loop.
 func Cycle[T any](args ...[]T) func(func(T) bool) {
 	return func(yield func(T) bool) {
