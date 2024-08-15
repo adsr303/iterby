@@ -1,5 +1,3 @@
-//go:build goexperiment.rangefunc
-
 package iterby
 
 // Enumerate allows to iterate over single-value rangefunc with indexes,
