@@ -1,12 +1,14 @@
 package iterby
 
+import "iter"
+
 // Enumerate allows to iterate over single-value rangefunc with indexes,
 // similar to for-range over slices:
 //
 //	for i, x := range iterby.Enumerate(f) {
 //	    fmt.Println(i, x)
 //	}
-func Enumerate[T any](f func(func(T) bool)) func(func(int, T) bool) {
+func Enumerate[T any](f iter.Seq[T]) iter.Seq2[int, T] {
 	return func(yield func(int, T) bool) {
 		var index int
 		for t := range f {
@@ -20,7 +22,7 @@ func Enumerate[T any](f func(func(T) bool)) func(func(int, T) bool) {
 
 // Count generates an infinite sequence of consecutive integers,
 // starting from 0.
-func Count() func(func(int) bool) {
+func Count() iter.Seq[int] {
 	return func(yield func(int) bool) {
 		for i := 0; ; i++ {
 			if !yield(i) {
@@ -37,7 +39,7 @@ type Number interface {
 
 // Count2 generates an infinite sequence of numbers, starting from start
 // and incrementing by step.
-func Count2[T Number](start, step T) func(func(T) bool) {
+func Count2[T Number](start, step T) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		for i := start; ; i += step {
 			if !yield(i) {
@@ -49,7 +51,7 @@ func Count2[T Number](start, step T) func(func(T) bool) {
 
 // Chain generates a sequence of all elements of provided slices,
 // allowing to for-range over them in a single loop.
-func Chain[T any](args ...[]T) func(func(T) bool) {
+func Chain[T any](args ...[]T) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		for _, s := range args {
 			for _, t := range s {
@@ -63,7 +65,7 @@ func Chain[T any](args ...[]T) func(func(T) bool) {
 
 // Cycle generates an infinitely repeating sequence of all elements of
 // provided slices, allowing to for-range over them in a single loop.
-func Cycle[T any](args ...[]T) func(func(T) bool) {
+func Cycle[T any](args ...[]T) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		for {
 			for t := range Chain(args...) {
@@ -83,7 +85,7 @@ func Cycle[T any](args ...[]T) func(func(T) bool) {
 //
 // [AWK's record ranges]: https://www.gnu.org/software/gawk/manual/html_node/Ranges.html
 // [Perl's range operators]: https://perldoc.perl.org/perlop#Range-Operators
-func RangeFilter[T any](begin, end func(T) bool, f func(func(T) bool)) func(func(T) bool) {
+func RangeFilter[T any](begin, end func(T) bool, f iter.Seq[T]) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		var inRange bool
 		for t := range f {
