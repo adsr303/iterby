@@ -7,7 +7,7 @@ import (
 	"github.com/adsr303/iterby"
 )
 
-func ExampleFilterLines() {
+func ExampleLineFilter() {
 	rangedLines := `
 outside
 {
@@ -22,7 +22,11 @@ abc
 xyz
 }
 `
-	for s := range iterby.FilterLines(`\{`, `\}`, strings.NewReader(rangedLines)) {
+	f, err := iterby.NewLineFilter(`\{`, `\}`)
+	if err != nil {
+		fmt.Println(err)
+	}
+	for s := range f.Iterate(strings.NewReader(rangedLines), iterby.NoOpHandler) {
 		fmt.Println(s)
 	}
 	// Output:
