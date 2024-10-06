@@ -27,7 +27,7 @@ func IterateLines(r io.Reader, errHandler func(error)) iter.Seq[string] {
 
 // A LineFilter scans over the provided [io.Reader] pushing the lines that
 // fall within inclusive ranges from lines matching First to ones matching
-// Last.
+// Last. Use [NewLineFilter] for simpler construction.
 type LineFilter struct {
 	First, Last *regexp.Regexp
 }
