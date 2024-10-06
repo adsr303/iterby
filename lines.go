@@ -25,10 +25,15 @@ func IterateLines(r io.Reader, errHandler func(error)) iter.Seq[string] {
 	}
 }
 
+// A LineFilter scans over the provided [io.Reader] pushing the lines that
+// fall within inclusive ranges from lines matching First to ones matching
+// Last.
 type LineFilter struct {
-	first, last *regexp.Regexp
+	First, Last *regexp.Regexp
 }
 
+// NoOpHandler ignores the error passed as argument.
+// It can be used in [IterateLines] or [LineFilter.Iterate].
 func NoOpHandler(_ error) {}
 
 // NewLineFilter returns a [LineFilter] over lines from r that fall within
@@ -45,7 +50,7 @@ func NewLineFilter(first, last string) (LineFilter, error) {
 	if err != nil {
 		return LineFilter{}, fmt.Errorf("invalid regexp for last: %w", err)
 	}
-	return LineFilter{first: rf, last: rl}, nil
+	return LineFilter{First: rf, Last: rl}, nil
 }
 
 // Iterate returns an iterator over lines filtered from r that fall within
@@ -55,5 +60,5 @@ func NewLineFilter(first, last string) (LineFilter, error) {
 // It returns a single-use iterator.
 func (f LineFilter) Iterate(r io.Reader, errHandler func(error)) iter.Seq[string] {
 	i := IterateLines(r, errHandler)
-	return RangeFilter(f.first.MatchString, f.last.MatchString, i)
+	return RangeFilter(f.First.MatchString, f.Last.MatchString, i)
 }
