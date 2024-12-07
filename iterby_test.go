@@ -2,9 +2,41 @@ package iterby_test
 
 import (
 	"fmt"
+	"iter"
+	"slices"
+	"testing"
 
 	"github.com/adsr303/iterby"
 )
+
+func TestEnumerate(t *testing.T) {
+	s := []string{"a", "b", "c"}
+	seq := func() iter.Seq[string] {
+		return func(yield func(string) bool) {
+			for _, x := range s {
+				if !yield(x) {
+					return
+				}
+			}
+		}
+	}
+	for i, x := range iterby.Enumerate(seq()) {
+		if x != s[i] {
+			t.Errorf("expected s[%d] to be %s, got %s", i, s[i], x)
+		}
+	}
+}
+
+func TestChain(t *testing.T) {
+	s := make([]string, 0)
+	for x := range iterby.Chain([]string{"foo", "bar"}, []string{"baz"}) {
+		s = append(s, x)
+	}
+	expected := []string{"foo", "bar", "baz"}
+	if !slices.Equal(s, expected) {
+		t.Errorf("expected %v, got %v", expected, s)
+	}
+}
 
 func ExampleCount() {
 	for i := range iterby.Count() {
